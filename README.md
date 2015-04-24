@@ -2,7 +2,7 @@
 Signed url creation to download a Google Cloudstorage object on appengine
 
 The App Engine SDK supports the Cloud Storage Client. It doesn't support the cloudstoge REST API's.  
-But the SDK can use the REST API and a service account to access the hosted Cloud storage.
+But the SDK can use a service account to access the hosted Cloud storage.
 An appengine service accounts makes it very easy to use OAuth2 and Python APIs.  
 To make this work in the SDK, you have to use two options in development server:
 
