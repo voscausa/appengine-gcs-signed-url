@@ -75,5 +75,5 @@ class DownloadSigned(webapp2.RequestHandler):
             self.response.write('<p>No value provided for argument bucket_object</p>')
             return
 
-        self.response.write('<p>SignUrl finished. Download : <a href="/sign_url?bucket_object=%s">%s</a></p>' 
+        self.response.write('<p>Download : <a href="/sign_url?bucket_object=%s">%s</a> using a signed url</p>' 
                             % (bucket_object, bucket_object))
