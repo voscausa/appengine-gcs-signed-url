@@ -53,13 +53,12 @@ def sign_url(bucket_object, expires_after_seconds=60, bucket=default_bucket):
 
 class SignUrl(webapp2.RequestHandler):
 
-    def get(self):
+    def get(self, bucket_object):
         """ create a signed url when the download link is clicked and redirect instantly """
 
-        bucket_object = self.request.get('bucket_object', default_value=None)
         if bucket_object:
             signed_url = sign_url(bucket_object, expires_after_seconds=5)
-            self.redirect(signed_url)
+            self.redirect(signed_url, code=302)
         else:
             self.abort(400)
 
@@ -73,7 +72,6 @@ class DownloadSigned(webapp2.RequestHandler):
         bucket_object = self.request.get('bucket_object', default_value=None)
         if not bucket_object:
             self.response.write('<p>No value provided for argument bucket_object</p>')
-            return
-
-        self.response.write('<p>Download : <a href="/sign_url?bucket_object=%s">%s</a> using a signed url</p>' 
-                            % (bucket_object, bucket_object))
+        else:
+            self.response.write('<p>Download : <a href="/sign_url/%s?bucket_object=%s">%s</a> using a signed url</p>' 
+                                % (bucket_object, bucket_object))
