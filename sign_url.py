@@ -23,7 +23,7 @@ def sign_url(bucket_object, expires_after_seconds=60, bucket=default_bucket):
     """
 
     method = 'GET'
-    gcs_filename = '/%s/%s' % (bucket, str(bucket_object))
+    gcs_filename = '/%s/%s' % (bucket, bucket_object)
     content_md5, content_type = None, None
 
     # expiration : number of seconds since epoch
@@ -36,18 +36,18 @@ def sign_url(bucket_object, expires_after_seconds=60, bucket=default_bucket):
         content_md5 or '',
         content_type or '',
         str(expiration),
-        gcs_filename])
+        str(gcs_filename)])
 
     _, signature_bytes = app_identity.sign_blob(signature_string)
 
     # Set the right query parameters. we use a gae service account for the id
     query_params = {'GoogleAccessId': google_access_id,
                     'Expires': str(expiration),
-                    'Signature': base64.b64encode(signature_bytes}
+                    'Signature': base64.b64encode(signature_bytes)}
 
     # Return the built URL.
     return '{endpoint}{resource}?{querystring}'.format(endpoint=API_ACCESS_ENDPOINT,
-                                                       resource=gcs_filename,
+                                                       resource=str(gcs_filename),
                                                        querystring=urllib.urlencode(query_params))
 
 
