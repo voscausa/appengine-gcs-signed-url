@@ -52,7 +52,21 @@ def sign_url(bucket_object, expires_after_seconds=60, bucket=default_bucket):
 
 
 class SignUrl(webapp2.RequestHandler):
-    """ create signed url for a cloudstorage object to download """
+
+    def get(self):
+        """ create a signed url when the download link is clicked and redirect instantly """
+
+        bucket_object = self.request.get('bucket_object', default_value=None)
+        if bucket_object:
+            signed_url = sign_url(bucket_object, expires_after_seconds=5)
+            self.redirect(signed_url)
+        else:
+            self.abort(400)
+
+
+class DownloadSigned(webapp2.RequestHandler):
+    """ create a download link, which will not expire. 
+        create a signed url when the link is clicked to download the bucket_object """
 
     def get(self):
 
@@ -61,6 +75,4 @@ class SignUrl(webapp2.RequestHandler):
             self.response.write('<p>No value provided for argument bucket_object</p>')
             return
 
-        signed_url = sign_url(bucket_object, expires_after_seconds=7200)
-
-        self.response.write('<p>SignUrl finished. Download : <a href="%s">%s</a></p>' % (signed_url, bucket_object))
+        self.response.write('<p>SignUrl finished. Download : <a href="/sign_url?bucket_object=%s">%s</a></p>' % (bucket_object, bucket_object))
