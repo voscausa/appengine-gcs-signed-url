@@ -16,18 +16,19 @@ default_bucket = '%s.appspot.com' % os.environ['APPLICATION_ID'].split('~', 1)[1
 google_access_id = app_identity.get_service_account_name()
 
 
-def sign_url(bucket_object, expires_after_seconds=60):
+def sign_url(bucket_object, expires_after_seconds=60, bucket=default_bucket):
     """ cloudstorage signed url to download cloudstorage object without login
         Docs : https://cloud.google.com/storage/docs/access-control?hl=bg#Signed-URLs
         API : https://cloud.google.com/storage/docs/reference-methods?hl=bg#getobject
     """
 
     method = 'GET'
-    gcs_filename = '/%s/%s' % (default_bucket, str(bucket_object))
+    gcs_filename = '/%s/%s' % (bucket, str(bucket_object))
     content_md5, content_type = None, None
 
-    expiration = datetime.utcnow() + timedelta(seconds=expires_after_seconds)
-    expiration = int(time.mktime(expiration.timetuple()))
+    # expiration : number of seconds since epoch
+    expiration_dt = datetime.utcnow() + timedelta(seconds=expires_after_seconds)
+    expiration = int(time.mktime(expiration_dt.timetuple()))
 
     # Generate the string to sign.
     signature_string = '\n'.join([
@@ -38,12 +39,11 @@ def sign_url(bucket_object, expires_after_seconds=60):
         gcs_filename])
 
     _, signature_bytes = app_identity.sign_blob(signature_string)
-    signature = base64.b64encode(signature_bytes)
 
-    # Set the right query parameters.
+    # Set the right query parameters. we use a gae service account for the id
     query_params = {'GoogleAccessId': google_access_id,
                     'Expires': str(expiration),
-                    'Signature': signature}
+                    'Signature': base64.b64encode(signature_bytes}
 
     # Return the built URL.
     return '{endpoint}{resource}?{querystring}'.format(endpoint=API_ACCESS_ENDPOINT,
