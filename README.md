@@ -17,6 +17,6 @@ Use openssl to convert the p12 in a RSA pem key. For windows use:
 
     openssl pkcs12 -in <p12 key filename>  -nocerts -nodes -passin pass:notasecret | openssl rsa -out <pem key filename>
     
-I used [this link](http://slproweb.com/download/Win64OpenSSL_Light-1_0_2f.exe) to install OpenSSL
+I used [this link](http://slproweb.com/products/Win32OpenSSL.html) to install OpenSSL
 
 [More docs about the service account SDK options](https://gist.github.com/pwalsh/b8563e1a1de3347a8066)
